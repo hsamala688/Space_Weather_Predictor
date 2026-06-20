@@ -5,7 +5,7 @@ import io
 
 data_url = "https://spdf.gsfc.nasa.gov/pub/data/omni/high_res_omni/monthly_1min/omni_min202605.asc"
 
-# Hardcoded column names in line with hroformat.txt
+# Hardcoded column names in line with hroformat.txt, Gemini did this part for me
 omni_columns = [
     "year", "day", "hour", "minute", "id_imf", "id_sw", 
     "num_pts_imf", "num_pts_sw", "percent_interp", "timeshift", 
@@ -25,15 +25,19 @@ response = requests.get(data_url)
 print(f"Request to data source returned status code: {response.status_code}")
 
 df = pd.read_csv(
+    io.StringIO(response.text), # read the response content as a string and pass it to StringIO for pandas to read
     sep=r'\s+',
     header=None,
     names=omni_columns,
     on_bad_lines='skip'
 )
 
-# 5. Data Hygiene: Replace NASA's missing value placeholders with NaN
-# Per-column fill values, transcribed from hroformat.txt.
-# Each fill is that field's width filled with 9s, which is why it differs by column.
+
+'''
+NASA Uses 999 or 9999 (or similar) as fill values for missing data
+so I had Claude read through the hroformat.txt documentation and assign the specific Null values
+attributed to each column 
+'''
 fill_values = {
     # spacecraft / QC metadata (cleaning these is optional; see note below)
     "id_imf": 99, "id_sw": 99,
@@ -75,6 +79,14 @@ fill_values = {
 df.replace({col: {fill: np.nan} for col, fill in fill_values.items()}, inplace=True)
 
 print(f"DataFrame Dimensions: {df.shape[0]} rows x {df.shape[1]} columns.\n")
-print(df.groupby('day')[['ae_index', 'sym_h']].count())
+
+print(df.groupby('day')[['ae_index', 'sym_h']].count()) 
+'''
+The groupby was performed to check if there was a legitimate delay in the data because it comes from a specific station in Kyoto
+and I needed to see if there were any days with zero observations, 
+which would indicate a data gap rather than just a delay in reporting
+
+'''
+
 print(f"\nMissing Values by Column:\n{df.isna().sum()}")
 print(df.head())
