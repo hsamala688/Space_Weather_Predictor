@@ -1,0 +1,32 @@
+--------------------------------------------------------------------------
+RuntimeError                              Traceback (most recent call last)
+Cell In[14], line 29
+     25         return x
+     26 
+     27 # Shape test
+     28 layer = SphericalConvLayer(1, 16, NLAT, NLON, LMAX).to(device)
+---> 29 out   = layer(X_train[:4].to(device))
+     30 print(f'Layer input:  {X_train[:4].shape}')
+     31 print(f'Layer output: {out.shape}')
+
+File ~/Documents/S2CNN/Space_Weather_Predictor/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py:1778, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1776     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1777 else:
+-> 1778     return self._call_impl(*args, **kwargs)
+
+File ~/Documents/S2CNN/Space_Weather_Predictor/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py:1789, in Module._call_impl(self, *args, **kwargs)
+   1784 # If we don't have any hooks, we want to skip the rest of the logic in
+   1785 # this function, and just call forward.
+   1786 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1787         or _global_backward_pre_hooks or _global_backward_hooks
+   1788         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1789     return forward_call(*args, **kwargs)
+   1791 result = None
+   1792 called_always_called_hooks = set()
+...
+--> 373     return _VF.einsum(equation, operands)  # type: ignore[attr-defined]
+    375 path = None
+    376 if opt_einsum.is_available():
+
+RuntimeError: einsum(): subscript m has size 32 for operand 1 which does not broadcast with previously seen size 65
+Output is truncated. View as a scrollable element or open in a text editor. Adjust cell output settings...
