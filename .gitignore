@@ -2,3 +2,4 @@ supermag/.venv
 supermag/.env
 supermag/__pycache__
 .DS_Store
+supermag/supermag_data/
