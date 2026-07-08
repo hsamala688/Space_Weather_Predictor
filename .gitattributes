@@ -1,0 +1,4 @@
+data/falisha_windows_gl23x45/*.npy filter=lfs diff=lfs merge=lfs -text
+data/falisha_windows_gl23x45/*.json filter=lfs diff=lfs merge=lfs -text
+data/falisha_windows_gl23x45/lats.npy filter=lfs diff=lfs merge=lfs -text
+data/falisha_windows_gl23x45/lons.npy filter=lfs diff=lfs merge=lfs -text
