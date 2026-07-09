@@ -1,0 +1,67 @@
+"""Pull daily observed F10.7 solar flux (2000-2025) for the IRI baseline.
+
+Source: CelesTrak SW-All.txt. The OBSERVED block is whitespace-separated
+fixed-field (NOT the CSV variant in the docs): fields are
+  0:year 1:month 2:day 3:BSRN 4:ND 5-12:Kp 13:Ksum 14-21:ap 22:Apavg
+  23:Cp 24:C9 25:ISN 26:F10.7_adj 27:Q 28-29:adj81 30:F10.7_obs 31-32:obs81
+We read only the OBSERVED block, so predicted sections never enter the baseline.
+
+Values above 300 sfu (burst-inflated daily measurements, clean-flagged but not
+valid as a daily EUV proxy) are clipped and time-interpolated. These fall
+mostly on major solar-event days, so their F10.7 is interpolated, not measured.
+
+PyIRI ships no F10.7 index, so it must be supplied externally.
+
+Output: data/raw/f107/f107_daily.parquet  (date-indexed, f107_obs)
+"""
+from pathlib import Path
+
+import pandas as pd
+import requests
+
+URL = "https://celestrak.org/SpaceData/SW-All.txt"
+OUT = Path("data/raw/f107/f107_daily.parquet")
+START, END = "2000-01-01", "2025-12-31"
+F107_OBS_FIELD = 30          # verified against the format doc's sample row
+F107_MAX = 300               # physical ceiling for daily solar-activity F10.7
+
+
+def main():
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+
+    resp = requests.get(URL, timeout=60)
+    resp.raise_for_status()
+    text = resp.text
+    if text.lstrip().startswith("<"):
+        raise ValueError(f"{URL} returned HTML, not data (check the URL is current)")
+
+    lines = text.splitlines()
+    begin = next(i for i, ln in enumerate(lines) if ln.strip() == "BEGIN OBSERVED")
+    end = next(i for i, ln in enumerate(lines) if ln.strip() == "END OBSERVED")
+
+    dates, f107 = [], []
+    for ln in lines[begin + 1:end]:
+        f = ln.split()
+        if len(f) <= F107_OBS_FIELD:
+            continue
+        dates.append(f"{f[0]}-{f[1]}-{f[2]}")
+        f107.append(float(f[F107_OBS_FIELD]))
+
+    df = pd.DataFrame({"date": pd.to_datetime(dates), "f107_obs": f107})
+    df = df[(df["date"] >= START) & (df["date"] <= END)]
+    df = df.set_index("date").sort_index()
+
+    # Clip burst-inflated outliers and interpolate over them.
+    n_clipped = int((df["f107_obs"] > F107_MAX).sum())
+    df.loc[df["f107_obs"] > F107_MAX, "f107_obs"] = float("nan")
+    df["f107_obs"] = df["f107_obs"].interpolate(method="time")
+
+    df.to_parquet(OUT)
+    print(f"wrote {OUT}  ({len(df)} days, {df.index[0].date()}..{df.index[-1].date()})")
+    print(f"clipped {n_clipped} burst days (>{F107_MAX} sfu), interpolated")
+    print(f"f107_obs range: {df['f107_obs'].min():.1f}..{df['f107_obs'].max():.1f} sfu")
+    print(f"2000-01-01 = {df.loc['2000-01-01', 'f107_obs']:.1f} (expect 129.9)")
+
+
+if __name__ == "__main__":
+    main()
