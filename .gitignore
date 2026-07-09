@@ -3,3 +3,23 @@ supermag/.env
 supermag/__pycache__
 .DS_Store
 supermag/supermag_data/
+
+data/interpolated_gl23x45/
+data/iri_gl23x45/
+data/dtec_gl23x45/
+data/omni_aligned_gl23x45/
+data/falisha_windows_gl23x45/
+*.npy
+# Generated data artifacts
+data/falisha_windows_gl23x45/
+data/interpolated_gl23x45/
+data/iri_gl23x45/
+data/dtec_gl23x45/
+data/omni_aligned_gl23x45/
+data/raw/
+data/manifests/
+*.npy
+*.npz
+
+
+.venv
