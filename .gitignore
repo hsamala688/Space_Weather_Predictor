@@ -23,3 +23,5 @@ data/manifests/
 
 
 .venv
+data_pull/.netrc
+.netrc
