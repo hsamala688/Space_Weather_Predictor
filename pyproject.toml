@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swp-data"
+version = "0.2.0"
+description = "Space Weather Predictor data pipeline (Medallion bronze/silver/gold)"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "pyarrow",
+    "requests",
+    "unlzw3",
+    "PyIRI",
+    "torch",
+    "pyyaml",
+]
+
+[project.scripts]
+swp-data = "swp_data.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

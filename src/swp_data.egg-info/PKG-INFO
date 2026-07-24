@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: swp-data
+Version: 0.2.0
+Summary: Space Weather Predictor data pipeline (Medallion bronze/silver/gold)
+Requires-Python: >=3.10
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: pandas
+Requires-Dist: pyarrow
+Requires-Dist: requests
+Requires-Dist: unlzw3
+Requires-Dist: PyIRI
+Requires-Dist: torch
+Requires-Dist: pyyaml

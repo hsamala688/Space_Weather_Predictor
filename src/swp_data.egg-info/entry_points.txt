@@ -1,0 +1,2 @@
+[console_scripts]
+swp-data = swp_data.cli:main

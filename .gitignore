@@ -4,20 +4,19 @@ supermag/__pycache__
 .DS_Store
 supermag/supermag_data/
 
-data/interpolated_gl23x45/
-data/iri_gl23x45/
-data/dtec_gl23x45/
-data/omni_aligned_gl23x45/
-data/falisha_windows_gl23x45/
-*.npy
-# Generated data artifacts
-data/falisha_windows_gl23x45/
-data/interpolated_gl23x45/
-data/iri_gl23x45/
-data/dtec_gl23x45/
-data/omni_aligned_gl23x45/
+# Generated data artifacts (Medallion layers)
+data/bronze/
+data/silver/
+data/gold/
+data/_runs/
+# Legacy flat layout (pre-migration; kept ignored so stragglers stay untracked)
 data/raw/
 data/manifests/
+data/interpolated_gl23x45/
+data/iri_gl23x45/
+data/dtec_gl23x45/
+data/omni_aligned_gl23x45/
+data/falisha_windows_gl23x45/
 *.npy
 *.npz
 
@@ -25,3 +24,6 @@ data/manifests/
 .venv
 data_pull/.netrc
 .netrc
+
+__pycache__/
+falisha_windows_gl23x45.tar.gz
